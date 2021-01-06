@@ -94,11 +94,16 @@ function App() {
         jobtime: 1243,
         compressor_sleeptime: 16000,
         temperature: {
-            moroz: -16.3,
-            body: -6.7,
-            unit: 27.3,
-            room: 22.8,
-            compressor: 56.8
+            moroz: null,
+            body: null,
+            unit: null,
+            room: null,
+            compressor: null
+            // moroz: -16.3,
+            // body: -6.7,
+            // unit: 27.3,
+            // room: 22.8,
+            // compressor: 56.8
         },
     });
     const [config, setConfig] = React.useState({
@@ -129,7 +134,7 @@ function App() {
 
     const niceTime = (sec) => {
         if (sec < 45) {
-            return sec + " сек.";
+            return  parseInt(sec) + " сек.";
         } else if (sec < 90) {
             return "1 мин.";
         } else if (sec < 150) {
@@ -148,15 +153,17 @@ function App() {
     }
 
     const changeJob = (job) => {
-        setState(prevState => {
-            prevState.jobtime = 0;
-            prevState.job = job;
-            return prevState;
+        API.get("/setjob/" + job, () => {
+            setState(prevState => {
+                prevState.jobtime = 0;
+                prevState.job = job;
+                return prevState;
+            });
+            // state.jobtime = 0;
+            // state.job = job;
+            // setState(state);
+            console.log("changejob", job, state);
         });
-        // state.jobtime = 0;
-        // state.job = job;
-        // setState(state);
-        console.log("changejob", job, state);
     }
 
     const getFanState = () => {
@@ -175,13 +182,16 @@ function App() {
                 setConfig(config)
                 console.log("Config loaded", config);
             });
-        API.get("/state")
-            .then(response => response.json())
-            .then(state => {
-                setState(state)
-                console.log("State loaded", state);
-            });
-    }, []);
+
+        setInterval(() => {
+            API.get("/state")
+                .then(response => response.json())
+                .then(state => {
+                    setState(state)
+                    console.log("State loaded", state);
+                });
+        }, 3000);
+    }, ['state']);
     return (
         <>
             <AppBar position="fixed">
@@ -223,13 +233,13 @@ function App() {
                                 <StateSectionTitle title="Температура"/>
                                     {Object.keys(config.temp_sensors).map((key, index) => {
                                         let temp = " ̊ C";
-                                        if (state.temperature[key] === null) {
-                                            temp = "-";
-                                        } else {
+                                        if (state.temperature[key]) {
                                             temp = state.temperature[key] + temp;
                                             if (state.temperature[key] > 0) {
                                                 temp = "+" + temp;
                                             }
+                                        } else {
+                                            temp = "-";
                                         }
                                         return <StateItem key={"temp_" + key} title={temp_sensors[key]} value={temp}/>
                                     })}
