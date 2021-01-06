@@ -90,8 +90,8 @@ function App() {
     const [auth, setAuth] = React.useState(true);
     const [state, setState] = React.useState({
         uptime: 159200,
-        task: 'none',
-        tasktime: 1243,
+        job: 'none',
+        jobtime: 1243,
         compressor_sleeptime: 16000,
         temperature: {
             moroz: -16.3,
@@ -112,7 +112,7 @@ function App() {
 
 
 
-    const tasks = {
+    const jobs = {
         none: "Недоступен",
         sleep: "Сон",
         freeze: "Охлаждение",
@@ -147,22 +147,22 @@ function App() {
         return time > 0 ? niceTime((new Date()).getTime() / 1000 - time) : "-";
     }
 
-    const changeTask = (task) => {
+    const changeJob = (job) => {
         setState(prevState => {
-            prevState.tasktime = 0;
-            prevState.task = task;
+            prevState.jobtime = 0;
+            prevState.job = job;
             return prevState;
         });
-        // state.tasktime = 0;
-        // state.task = task;
+        // state.jobtime = 0;
+        // state.job = job;
         // setState(state);
-        console.log("changeTask", task, state);
+        console.log("changejob", job, state);
     }
 
     const getFanState = () => {
-        if (state.task === "none") {
+        if (state.job === "none") {
             return "-";
-        } else if (state.task === "heat" && state.task_time > 0) {
+        } else if (state.job === "heat" && state.job_time > 0) {
             return "Отключен";
         }
         return "Работает";
@@ -215,9 +215,9 @@ function App() {
                                 <StateSectionTitle title="Состояние" />
                                 <StateItem key="uptime" title="Общее время работы" value={niceTimeDiff(state.start_time)} />
 
-                                <StateItem key="task" title="Текущее состояние" value={tasks[state.task]} />
+                                <StateItem key="job" title="Текущее состояние" value={jobs[state.job]} />
 
-                                <StateItem key="time" title="В течение" value={niceTimeDiff(state.task_time)} />
+                                <StateItem key="time" title="В течение" value={niceTimeDiff(state.job_time)} />
                                 <StateItem key="fan" title="Вентилятор" value={getFanState()} />
 
                                 <StateSectionTitle title="Температура"/>
@@ -234,43 +234,43 @@ function App() {
                                         return <StateItem key={"temp_" + key} title={temp_sensors[key]} value={temp}/>
                                     })}
 
-                                    {auth && state.task !== "none" &&
+                                    {auth && state.job !== "none" &&
                                     <Grid container>
                                         <StateSectionTitle title="Изменить режим работы"/>
 
                                         <Grid item xs={12}>
                                             <div className={classes.mainButtons}>
                                                 <Grid container spacing={5} justify="center">
-                                                    {state.task === "freeze" ||
+                                                    {state.job === "freeze" ||
                                                     state.compressor_sleeptime < config.compressor_sleeptime ||
                                                     <Grid item>
                                                         <Button
                                                             variant="contained"
                                                             color="primary"
                                                             onClick={() => {
-                                                                changeTask("freeze")
+                                                                changeJob("freeze")
                                                             }}
                                                         >Охлаждение</Button>
                                                     </Grid>
                                                     }
-                                                    {state.task === "heat" ||
+                                                    {state.job === "heat" ||
                                                     <Grid item>
                                                         <Button
                                                             variant="contained"
                                                             color="secondary"
                                                             onClick={() => {
-                                                                changeTask("heat")
+                                                                changeJob("heat")
                                                             }}
                                                         >Разморозка</Button>
                                                     </Grid>
                                                     }
-                                                    {state.task === "sleep" ||
+                                                    {state.job === "sleep" ||
                                                     <Grid item>
                                                         <Button
                                                             variant="outlined"
                                                             color="secondary"
                                                             onClick={() => {
-                                                                changeTask("sleep")
+                                                                changeJob("sleep")
                                                             }}
                                                         >Отдых</Button>
                                                     </Grid>
